@@ -6,8 +6,8 @@ from pytest import raises
 import pytest
 parametrize = pytest.mark.parametrize
 
-from cli import metadata
-from cli.main import main
+from pykey import metadata
+from pykey.main import main
 
 
 class TestMain(object):

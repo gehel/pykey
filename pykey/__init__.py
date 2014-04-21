@@ -1,6 +1,6 @@
 """It does cool things"""
 
-from cli import metadata
+from pykey import metadata
 
 
 __version__ = metadata.version

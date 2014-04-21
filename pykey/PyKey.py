@@ -1,4 +1,4 @@
-from cli import metadata
+from pykey import metadata
 
 
 __version__ = metadata.version
@@ -7,7 +7,8 @@ __license__ = metadata.license
 __copyright__ = metadata.copyright
 
 
-from cli import KeyHandler, KeyListener
+from pykey.KeyHandler import KeyHandler
+from pykey.KeyListener import KeyListener
 from evdev import InputDevice, list_devices
 
 

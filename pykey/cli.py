@@ -22,7 +22,7 @@ SHIFT J     V       X     Z    SHIFT
 """
 
 from evdev.ecodes import *
-from pykey import PyKey
+from pykey.PyKey import PyKey
 
 if __name__ == "__main__":
     no_mods = {
