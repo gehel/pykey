@@ -1,4 +1,4 @@
-from pykey import metadata
+import metadata
 
 
 __version__ = metadata.version
@@ -7,8 +7,8 @@ __license__ = metadata.license
 __copyright__ = metadata.copyright
 
 
-from pykey.KeyHandler import KeyHandler
-from pykey.KeyListener import KeyListener
+from KeyHandler import KeyHandler
+from KeyListener import KeyListener
 from evdev import InputDevice, list_devices
 
 
@@ -25,6 +25,7 @@ class PyKey(object):
             virtual_mods.update(v_mods)
 
         print virtual_mods
+        print mod_mapping
 
         self._key_listener = KeyListener(
             device_name=device_name,

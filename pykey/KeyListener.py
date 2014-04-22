@@ -1,4 +1,4 @@
-from pykey import metadata
+import metadata
 
 
 __version__ = metadata.version
@@ -11,13 +11,18 @@ from evdev import InputDevice, KeyEvent
 from evdev.ecodes import EV_KEY, KEY_ESC
 
 
+def should_stop(key_event):
+    return key_event.keycode == KEY_ESC
+
+
 class KeyListener:
     """
     Listen to all key strokes and detect when an actual key event should be
     sent
     """
-    def __init__(self, device_name, handler, mods, virtual_mods):
-        self._device = InputDevice(device_name)
+    def __init__(self, handler, mods, virtual_mods, device_name=None):
+        if device_name is not None:
+            self._device = InputDevice(device_name)
         self._handler = handler
         self._pressed_keys = set()
         self._pressed_count = 0
@@ -35,15 +40,9 @@ class KeyListener:
         for event in self._device.read_loop():
             if event.type == EV_KEY:
                 key_event = KeyEvent(event)
-                print('event: %s' % event)
-                print('key event: %s' % key_event)
-                if self.should_stop(key_event):
+                if should_stop(key_event):
                     break
                 self.handle_key(key_event)
-
-    @staticmethod
-    def should_stop(key_event):
-        return key_event.keycode == KEY_ESC
 
     def handle_key(self, key_event):
         if key_event.keystate == KeyEvent.key_down:
@@ -63,7 +62,7 @@ class KeyListener:
             else:
                 self._pressed_count -= 1
                 if self._pressed_count == 0:
-                    mods = self._pressed_mods
+                    mods = self._chord_mods
                     virtual_mods = self._pressed_virtual_mods
                     chord = self._pressed_keys
                     self._pressed_keys = set()
@@ -72,12 +71,12 @@ class KeyListener:
                         mods=mods,
                         virtual_mods=virtual_mods,
                         chord=chord,
-                        key_event=KeyEvent.key_down)
+                        value=KeyEvent.key_down)
                     self._handler.chord_event(
                         mods=mods,
                         virtual_mods=virtual_mods,
                         chord=chord,
-                        key_event=KeyEvent.key_up)
+                        value=KeyEvent.key_up)
 
     def close(self):
         self._device.ungrab()

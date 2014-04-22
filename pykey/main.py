@@ -6,7 +6,9 @@ from __future__ import print_function
 import argparse
 import sys
 
-from cli import metadata
+import metadata
+from mappings.basic import key_combinations, mod_mapping
+from PyKey import PyKey
 
 
 def main(argv):
@@ -44,13 +46,22 @@ URL: <{url}>
 
     print(epilog)
 
+    PyKey.print_devices()
+
+    py_key = PyKey(
+        device_name='/dev/input/event17',
+        mod_mapping=mod_mapping,
+        key_mapping=key_combinations)
+
+    py_key.start()
+    py_key.close()
+
     return 0
 
 
 def entry_point():
     """Zero-argument entry point for use with setuptools/distribute."""
     raise SystemExit(main(sys.argv))
-
 
 if __name__ == '__main__':
     entry_point()

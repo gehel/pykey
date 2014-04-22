@@ -1,4 +1,4 @@
-from pykey import metadata
+import metadata
 
 
 __version__ = metadata.version
@@ -19,7 +19,13 @@ class KeyHandler:
         self._key_mapping = key_mapping
 
     def chord_event(self, mods, virtual_mods, chord, value):
-        for key in self.map_chord(virtual_mods, chord):
+        chord_keys = self.map_chord(virtual_mods, chord)
+        if value == 0:
+            chord_keys = chord_keys + self.map_mods(mods)
+        else:
+            chord_keys = self.map_mods(mods) + chord_keys
+
+        for key in chord_keys:
             self._ui.write(EV_KEY, key, value)
         self._ui.syn()
 
@@ -32,6 +38,12 @@ class KeyHandler:
         if frozen_chord not in current_mapping:
             return []
         return current_mapping[frozen_chord]
+
+    def map_mods(self, keys):
+        mods = []
+        for key in keys:
+            mods.append(self._mod_mapping[key])
+        return mods
 
     def close(self):
         self._ui.close()
