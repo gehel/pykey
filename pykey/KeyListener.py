@@ -20,7 +20,7 @@ class KeyListener:
     Listen to all key strokes and detect when an actual key event should be
     sent
     """
-    def __init__(self, handler, mods, virtual_mods, device_name=None):
+    def __init__(self, handler, mods, virtual_mods, device_name=None, print_keys=False):
         if device_name is not None:
             self._device = InputDevice(device_name)
         self._handler = handler
@@ -31,6 +31,7 @@ class KeyListener:
         self._mods = frozenset(mods)
         self._pressed_mods = set()
         self._chord_mods = set()
+        self._print_keys = print_keys
 
     def print_capabilities(self):
         print self._device.capabilities(verbose=True)
@@ -45,6 +46,8 @@ class KeyListener:
                 self.handle_key(key_event)
 
     def handle_key(self, key_event):
+        if self._print_keys:
+            print(key_event)
         if key_event.keystate == KeyEvent.key_down:
             if key_event.scancode in self._virtual_mods:
                 self._pressed_virtual_mods.add(key_event.scancode)

@@ -8,7 +8,7 @@ import sys
 
 import metadata
 from mappings.basic import key_combinations, mod_mapping
-from PyKey import PyKey
+from PyKey import PyKey, print_devices
 
 
 def main(argv):
@@ -41,20 +41,38 @@ URL: <{url}>
         '-V', '--version',
         action='version',
         version='{0} {1}'.format(metadata.project, metadata.version))
+    arg_parser.add_argument(
+        '-d', '--device',
+        help='device to bind to, for example /dev/input/event1')
+    arg_parser.add_argument(
+        '-l', '--list-devices',
+        action='store_true',
+        help='print description of all input devices')
+    arg_parser.add_argument(
+        '-p', '--print-keys',
+        action='store_true',
+        help='print every key press, useful for debugging')
 
-    arg_parser.parse_args(args=argv[1:])
+    args = arg_parser.parse_args(args=argv[1:])
+
+    if not (args.list_devices or args.device):
+        arg_parser.error('No action requested, add --list-devices or --device')
 
     print(epilog)
 
-    PyKey.print_devices()
+    if args.list_devices:
+        print_devices()
+    elif args.device:
+        py_key = PyKey(
+            device_name=args.device,
+            mod_mapping=mod_mapping,
+            key_mapping=key_combinations,
+            print_keys=args.print_keys)
 
-    py_key = PyKey(
-        device_name='/dev/input/event17',
-        mod_mapping=mod_mapping,
-        key_mapping=key_combinations)
-
-    py_key.start()
-    py_key.close()
+        try:
+            py_key.start()
+        except KeyboardInterrupt:
+            py_key.close()
 
     return 0
 
